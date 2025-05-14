@@ -1,0 +1,15 @@
+<script type="text/javascript">
+	  (async () => {
+	      const res = await fetch("http://localhost:3000/api/prices", {
+	    headers: { accept: "application/json", 'ngrok-skip-browser-warning': '1' },
+	  });
+	  const data = await res.json();
+	  const quotes = data.data.body.data.quotes;
+	  console.error(quotes[quotes.length - 1].quote);
+	  const latestQuote = quotes[0];
+	  const title = document.querySelector(
+	    '.t-subtitle2.text-textPrimary.md\\:t-subtitle1.lg\\:t-headline5'
+	  );
+	  title.textContent = `1 Bitcoin equals $${latestQuote.quote.USD.price} USD`;
+	  })();
+</script>
