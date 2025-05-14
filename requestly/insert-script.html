@@ -1,0 +1,49 @@
+<script type="text/javascript">
+  // Ensure DOM is fully loaded before running the script
+  if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    runScript();
+  } else {
+    document.addEventListener('DOMContentLoaded', runScript);
+  }
+
+  // Main script function
+  function runScript() {
+    // Use a slight delay to ensure all network requests have likely completed
+    setTimeout(async () => {
+      try {
+        const res = await fetch("http://localhost:3000/api/prices", {
+          headers: { accept: "application/json", 'ngrok-skip-browser-warning': '1' },
+        });
+        
+        const data = await res.json();
+        const quotes = data.data.body.data.quotes;
+        const latestQuote = quotes[0];
+        
+        // Find the title element with retries to ensure page is fully loaded
+        let attempts = 0;
+        const maxAttempts = 5;
+        
+        const updateTitle = () => {
+          const title = document.querySelector(
+            '.t-subtitle2.text-textPrimary.md\\:t-subtitle1.lg\\:t-headline5'
+          );
+          
+          if (title) {
+            title.textContent = `1 Bitcoin equals $${latestQuote.quote.USD.price} USD`;
+            console.log("Bitcoin price updated successfully");
+          } else if (attempts < maxAttempts) {
+            attempts++;
+            console.log(`Element not found, retry attempt ${attempts}`);
+            setTimeout(updateTitle, 500);
+          } else {
+            console.error("Failed to find the Bitcoin price element");
+          }
+        };
+        
+        updateTitle();
+      } catch (error) {
+        console.error("Error updating Bitcoin price:", error);
+      }
+    }, 1000); // 1 second delay
+  }
+</script>
